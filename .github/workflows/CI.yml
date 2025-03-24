@@ -32,7 +32,7 @@ jobs:
         run: |
           pytest --maxfail=5 --disable-warnings --cov=. --cov-report=xml
       - name: Upload Python Coverage to Codecov
-        uses: codecov/codecov-action@v4
+        uses: codecov/codecov-action@v5
         with:
           flags: python
         env:
@@ -62,7 +62,7 @@ jobs:
           lcov --list coverage.info
       # Step 7: Upload C++ Coverage to Codecov
       - name: Upload C++ Coverage to Codecov
-        uses: codecov/codecov-action@v4
+        uses: codecov/codecov-action@v5
         with:
           flags: cpp
           files: build/coverage.info  # Path to the coverage report
