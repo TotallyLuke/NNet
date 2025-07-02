@@ -1,5 +1,10 @@
 import numpy as np
 
+
+def parse_floats(line):
+    return [float(x) for x in line.strip().split(",") if x.strip() != '']
+
+
 class NNet:
     """
     Class that represents a fully connected ReLU network from a .nnet file.
@@ -19,10 +24,11 @@ class NNet:
             symmetric = int(f.readline().strip().split(",")[0])
 
             # Read input normalization data
-            inputMinimums = [float(x) for x in f.readline().strip().split(",")[:-1]]
-            inputMaximums = [float(x) for x in f.readline().strip().split(",")[:-1]]
-            inputMeans = [float(x) for x in f.readline().strip().split(",")[:-1]]
-            inputRanges = [float(x) for x in f.readline().strip().split(",")[:-1]]
+            # Read input normalization data
+            inputMinimums = parse_floats(f.readline())
+            inputMaximums = parse_floats(f.readline())
+            inputMeans = parse_floats(f.readline())
+            inputRanges = parse_floats(f.readline())
 
             # Read weights and biases for each layer
             weights = []
@@ -30,7 +36,7 @@ class NNet:
             for layernum in range(numLayers):
                 previousLayerSize = layerSizes[layernum]
                 currentLayerSize = layerSizes[layernum + 1]
-                
+
                 # Read weights
                 weight_matrix = np.zeros((currentLayerSize, previousLayerSize))
                 for i in range(currentLayerSize):
@@ -63,10 +69,12 @@ class NNet:
         if len(inputs) != self.inputSize:
             raise ValueError(f"Expected input size {self.inputSize}, but got {len(inputs)}.")
 
+        self_mins = self.mins
+        self_maxes = self.maxes
         # Normalize inputs
         inputsNorm = np.array([
             (self.mins[i] if inputs[i] < self.mins[i] else self.maxes[i] if inputs[i] > self.maxes[i]
-             else inputs[i] - self.means[i]) / self.ranges[i]
+            else inputs[i] - self.means[i]) / self.ranges[i]
             for i in range(self.inputSize)
         ])
 
@@ -90,7 +98,7 @@ class NNet:
         # Normalize inputs
         inputsNorm = np.array([
             [(self.mins[i] if inputs[j, i] < self.mins[i] else self.maxes[i] if inputs[j, i] > self.maxes[i]
-              else inputs[j, i] - self.means[i]) / self.ranges[i]
+            else inputs[j, i] - self.means[i]) / self.ranges[i]
              for i in range(self.inputSize)]
             for j in range(inputs.shape[0])
         ])
